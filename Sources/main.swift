@@ -18,23 +18,40 @@ let screenHeight = gameHeigth * scale
 Raylib.initWindow(Int32(screenWidth), Int32(screenHeight), "Sandcastle")
 Raylib.setTargetFPS(60)
 
-game[10][20] = true
+let xSize = Float(screenWidth/gameWidth)
+let size = Vector2(x: xSize, y: xSize)
 
 while Raylib.windowShouldClose == false {
     for row in (0..<(gameHeigth - 1)).reversed() {
         for col in 0..<gameWidth {
-            if game[row][col] && !game[row + 1][col]  {
-                game[row][col] = false
-                game[row + 1][col] = true
+            if game[row][col] {
+                if !game[row + 1][col]  {
+                    game[row][col] = false
+                    game[row + 1][col] = true
+                } else if col < gameWidth - 1 && !game[row + 1][col + 1]  {
+                    game[row][col] = false
+                    game[row + 1][col + 1] = true
+                } else if col > 0 && !game[row + 1][col - 1]  {
+                    game[row][col] = false
+                    game[row + 1][col - 1] = true
+                }
             }
+        }
+    }
+    
+    if Raylib.isMouseButtonDown(.left) {
+        let mousePos = Raylib.getMousePosition()
+
+        let x = Int(mousePos.x.rounded() / xSize)
+        let y = Int(mousePos.y.rounded() / xSize)
+
+        if x >= 0 && x < gameWidth && y >= 0 && y < gameHeigth {
+            game[y][x] = true
         }
     }
 
     Raylib.beginDrawing()
     Raylib.clearBackground(Color.blue)
-
-    let xSize = Float(screenWidth/gameWidth)
-    let size = Vector2(x: xSize, y: xSize)
 
     for row in 0..<gameHeigth {
         for col in 0..<gameWidth {
